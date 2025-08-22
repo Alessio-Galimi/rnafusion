@@ -22,32 +22,29 @@ process ENSEMBL_DOWNLOAD {
 
     script:
     """
-     # Download chromosome FASTAs 1-22
+    # Download chromosome FASTAs 1-22
     for i in {1..22}; do
-        wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.${i}.fa.gz
+        wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.\${i}.fa.gz
     done
-
+    
     # Download MT, X, Y chromosomes
     for chr in MT X Y; do
         wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.\${chr}.fa.gz
     done
-
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${params.genome}.${ensembl_version}.gtf.gz
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${params.genome}.${ensembl_version}.chr.gtf.gz
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/cdna/Homo_sapiens.${params.genome}.cdna.all.fa.gz -O Homo_sapiens.${params.genome}.${ensembl_version}.cdna.all.fa.gz
-
-    gunzip -c Homo_sapiens.${params.genome}.dna.chromosome.* > Homo_sapiens.${params.genome}.${ensembl_version}.all.fa
-    gunzip Homo_sapiens.${params.genome}.${ensembl_version}.gtf.gz
-    gunzip Homo_sapiens.${params.genome}.${ensembl_version}.chr.gtf.gz
-
-
-
+    
+    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${genome}.${ensembl_version}.gtf.gz
+    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${genome}.${ensembl_version}.chr.gtf.gz
+    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/cdna/Homo_sapiens.${genome}.cdna.all.fa.gz -O Homo_sapiens.${genome}.${ensembl_version}.cdna.all.fa.gz
+    
+    gunzip -c Homo_sapiens.${genome}.dna.chromosome.* > Homo_sapiens.${genome}.${ensembl_version}.all.fa
+    gunzip Homo_sapiens.${genome}.${ensembl_version}.gtf.gz
+    gunzip Homo_sapiens.${genome}.${ensembl_version}.chr.gtf.gz
+    
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        wget: \$(echo wget -V 2>&1 | grep "GNU Wget" | cut -d" " -f3 > versions.yml)
+        wget: \$(echo wget -V 2>&1 | grep "GNU Wget" | cut -d" " -f3)
     END_VERSIONS
     """
-
     stub:
     """
     touch "Homo_sapiens.${genome}.${ensembl_version}.all.fa"
