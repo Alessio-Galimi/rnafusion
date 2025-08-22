@@ -22,8 +22,15 @@ process ENSEMBL_DOWNLOAD {
 
     script:
     """
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${params.genome}.dna.chromosome.{1..22}.fa.gz
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${params.genome}.dna.chromosome.{MT,X,Y}.fa.gz
+     # Download chromosome FASTAs 1-22
+    for i in {1..22}; do
+        wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.${i}.fa.gz
+    done
+
+    # Download MT, X, Y chromosomes
+    for chr in MT X Y; do
+        wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.\${chr}.fa.gz
+    done
 
     wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${params.genome}.${ensembl_version}.gtf.gz
     wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${params.genome}.${ensembl_version}.chr.gtf.gz
