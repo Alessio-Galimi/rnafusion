@@ -1,5 +1,3 @@
-ensembl_ch = Channel.fromPath('/bioinformatics_resources/genome_references/human/GRCh38/rnafusion_third_build/raw_ensembl/*')
-
 
 process ENSEMBL_DOWNLOAD {
     tag "ensembl"
@@ -14,7 +12,7 @@ process ENSEMBL_DOWNLOAD {
     val ensembl_version
     val genome
     val meta
-    path ensembl_files from ensembl_ch
+    path ensembl_files
 
 
     output:
