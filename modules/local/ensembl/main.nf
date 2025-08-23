@@ -11,6 +11,8 @@ process ENSEMBL_DOWNLOAD {
     val ensembl_version
     val genome
     val meta
+    path ensembl_files from '/bioinformatics_resources/genome_references/human/GRCh38/rnafusion_third_build/raw_ensembl/*'
+
 
     output:
     tuple val(meta), path("Homo_sapiens.${genome}.${ensembl_version}.all.fa")        , emit: fasta
@@ -21,24 +23,11 @@ process ENSEMBL_DOWNLOAD {
 
 
     script:
-    """
-    # Download chromosome FASTAs 1-22
-    for i in {1..22}; do
-        wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.\${i}.fa.gz
-    done
-    
-    # Download MT, X, Y chromosomes
-    for chr in MT X Y; do
-        wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.\${chr}.fa.gz
-    done
-    
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${genome}.${ensembl_version}.gtf.gz
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${genome}.${ensembl_version}.chr.gtf.gz
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/cdna/Homo_sapiens.${genome}.cdna.all.fa.gz -O Homo_sapiens.${genome}.${ensembl_version}.cdna.all.fa.gz
-    
+    """    
     gunzip -c Homo_sapiens.${genome}.dna.chromosome.* > Homo_sapiens.${genome}.${ensembl_version}.all.fa
-    gunzip Homo_sapiens.${genome}.${ensembl_version}.gtf.gz
-    gunzip Homo_sapiens.${genome}.${ensembl_version}.chr.gtf.gz
+    gunzip -c Homo_sapiens.${genome}.${ensembl_version}.gtf.gz > Homo_sapiens.${genome}.${ensembl_version}.gtf
+    gunzip -c Homo_sapiens.${genome}.${ensembl_version}.chr.gtf.gz > Homo_sapiens.${genome}.${ensembl_version}.chr.gtf
+
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
