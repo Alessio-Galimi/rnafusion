@@ -19,30 +19,37 @@ process ENSEMBL_DOWNLOAD {
     tuple val(meta), path("Homo_sapiens.${genome}.${ensembl_version}.cdna.all.fa.gz"), emit: transcript
     path "versions.yml"                                                                                                                       , emit: versions
 
-
     script:
     """
-    # Download chromosome FASTAs 1-22
+    # Download chromosome FASTAs 1–22
     for i in {1..22}; do
-        wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.\${i}.fa.gz
+        curl -L -O https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.${i}.fa.gz
     done
     
     # Download MT, X, Y chromosomes
     for chr in MT X Y; do
-        wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.\${chr}.fa.gz
+        curl -L -O https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/dna/Homo_sapiens.${genome}.dna.chromosome.${chr}.fa.gz
     done
     
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${genome}.${ensembl_version}.gtf.gz
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${genome}.${ensembl_version}.chr.gtf.gz
-    wget https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/cdna/Homo_sapiens.${genome}.cdna.all.fa.gz -O Homo_sapiens.${genome}.${ensembl_version}.cdna.all.fa.gz
+    # Download GTFs
+    curl -L -O https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${genome}.${ensembl_version}.gtf.gz
+    curl -L -O https://ftp.ensembl.org/pub/release-${ensembl_version}/gtf/homo_sapiens/Homo_sapiens.${genome}.${ensembl_version}.chr.gtf.gz
     
+    # Download cDNA (rename for consistency)
+    curl -L -o Homo_sapiens.${genome}.${ensembl_version}.cdna.all.fa.gz \
+        https://ftp.ensembl.org/pub/release-${ensembl_version}/fasta/homo_sapiens/cdna/Homo_sapiens.${genome}.cdna.all.fa.gz
+    
+    # Combine chromosome FASTAs
     gunzip -c Homo_sapiens.${genome}.dna.chromosome.* > Homo_sapiens.${genome}.${ensembl_version}.all.fa
+    
+    # Uncompress GTFs
     gunzip Homo_sapiens.${genome}.${ensembl_version}.gtf.gz
     gunzip Homo_sapiens.${genome}.${ensembl_version}.chr.gtf.gz
     
+    # Record versions
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        wget: \$(echo wget -V 2>&1 | grep "GNU Wget" | cut -d" " -f3)
+        curl: \$(curl --version | head -n 1 | awk '{print \$2}')
     END_VERSIONS
     """
     stub:
