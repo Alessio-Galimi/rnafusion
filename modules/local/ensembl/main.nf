@@ -1,4 +1,4 @@
-Channel.fromPath('/bioinformatics_resources/genome_references/human/GRCh38/rnafusion_third_build/raw_ensembl/*').set { ensembl_ch }
+ensembl_ch = Channel.fromPath('/bioinformatics_resources/genome_references/human/GRCh38/rnafusion_third_build/raw_ensembl/*')
 
 
 process ENSEMBL_DOWNLOAD {
