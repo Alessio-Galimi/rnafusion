@@ -11,7 +11,7 @@ process ENSEMBL_DOWNLOAD {
     val ensembl_version
     val genome
     val meta
-    path ensembl_files from '/bioinformatics_resources/genome_references/human/GRCh38/rnafusion_third_build/raw_ensembl/*'
+    path ensembl_files from Channel.fromPath('/bioinformatics_resources/genome_references/human/GRCh38/rnafusion_third_build/raw_ensembl/*')
 
 
     output:
