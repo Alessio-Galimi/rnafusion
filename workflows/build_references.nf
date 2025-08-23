@@ -37,10 +37,10 @@ workflow BUILD_REFERENCES {
     def fake_meta = [:]
     fake_meta.id = "Homo_sapiens.${params.genome}.${params.ensembl_version}"
     ENSEMBL_DOWNLOAD( 
-    ensembl_files: ensembl_ch,
-    genome: params.genome,
-    ensembl_version: params.ensembl_version,
-    meta: fake_meta
+    params.ensembl_version,    // val ensembl_version
+    params.genome,             // val genome  
+    fake_meta,                 // val meta
+    ensembl_ch                 // path ensembl_files
 )
     HGNC_DOWNLOAD( )
 
