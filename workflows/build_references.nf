@@ -33,7 +33,7 @@ include { GATK4_BEDTOINTERVALLIST }         from '../modules/nf-core/gatk4/bedto
 
 workflow BUILD_REFERENCES {
     // Define a channel for your pre-downloaded raw Ensembl files
-    ensembl_ch = Channel.fromPath('/bioinformatics_resources/genome_references/human/GRCh38/rnafusion_third_build/raw_ensembl/*')
+    ensembl_ch = Channel.fromPath('/bioinformatics_resources/genome_references/human/GRCh38/rnafusion_third_build/raw_ensembl/*').collect()
     def fake_meta = [:]
     fake_meta.id = "Homo_sapiens.${params.genome}.${params.ensembl_version}"
     ENSEMBL_DOWNLOAD( 
